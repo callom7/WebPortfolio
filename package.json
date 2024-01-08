@@ -1,0 +1,25 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "homepage": "https://github.com/callom7/WebPortfolio.git",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d build"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.0.0",
+    "vite": "^4.4.10"
+  },
+  "dependencies": {
+    "cannon-es": "^0.20.0",
+    "i": "^0.3.7",
+    "npm": "^10.2.0",
+    "or": "^0.2.0",
+    "three": "^0.157.0",
+    "three-plain-animator": "^1.1.2"
+  }
+}
