@@ -5,8 +5,8 @@ import * as THREE from "https://unpkg.com/three@0.127.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "https://unpkg.com/three@0.127.0/examples/jsm/loaders/FBXLoader.js";
 import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/RGBELoader.js';
-import { AmmoPhysics } from "https://unpkg.com/three@0.127.0/examples/jsm/physics/AmmoPhysics.js";
+//import { RGBELoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/RGBELoader.js';
+//import { AmmoPhysics } from "https://unpkg.com/three@0.127.0/examples/jsm/physics/AmmoPhysics.js";
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -84,12 +84,12 @@ Array(250).fill().forEach(addStar);
 // changes bg
 const spaceTexture = new THREE.TextureLoader().load('space.png')
 //scene.background = spaceTexture;
-const hdrTexturePath = './assets/Warehouse.hdr';
-const loader2 = new RGBELoader();
-loader2.load(hdrTexturePath, function(texture2){
-  texture2.mapping = THREE.EquirectangularReflectionMapping;
-  scene.background = texture2;
-})
+// const hdrTexturePath = './assets/Warehouse.hdr';
+// const loader2 = new RGBELoader();
+// loader2.load(hdrTexturePath, function(texture2){
+//   texture2.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.background = texture2;
+// })
 // avatar
 
 const moonTexture = new THREE.TextureLoader().load('./assets/MetallerDiffuse.png')
