@@ -5,8 +5,6 @@ import * as THREE from "https://unpkg.com/three@0.127.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "https://unpkg.com/three@0.127.0/examples/jsm/loaders/FBXLoader.js";
 import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader.js';
-//import { RGBELoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/RGBELoader.js';
-//import { AmmoPhysics } from "https://unpkg.com/three@0.127.0/examples/jsm/physics/AmmoPhysics.js";
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
