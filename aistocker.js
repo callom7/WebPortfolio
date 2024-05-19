@@ -5,7 +5,6 @@ import * as THREE from "https://unpkg.com/three@0.127.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "https://unpkg.com/three@0.127.0/examples/jsm/loaders/FBXLoader.js";
 import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader.js';
-
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -14,7 +13,6 @@ const camera = new THREE.PerspectiveCamera(
   1000
   
 );
-
 
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg"),
@@ -25,22 +23,12 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 camera.position.set(0, 0, -30);
 renderer.render(scene, camera);
-// object
-// Torus
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-const material = new THREE.MeshStandardMaterial({ color: 0xff6347 });
-const torus = new THREE.Mesh(geometry, material);
-//adding to the scene below
-
-scene.add(torus);
-torus.position.setX(-25);
-torus.position.setY(6);
-
 // Lights
 const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(5, 5, 5);
+pointLight.position.set(0, 25, -100);
 
 const ambientLight = new THREE.AmbientLight(0xffffff);
+ambientLight.intensity = 1.5;
 scene.add(pointLight, ambientLight);
 
 // const lightHelper = new THREE.PointLightHelper(pointLight)
@@ -49,7 +37,30 @@ const gridHelper = new THREE.GridHelper( 200, 50 )
 
 // const controls = new OrbitControls(camera, renderer.domElement); // Listen to dom events on the mouse and update the camera pos accordingly
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableZoom = true; // Enable pinch to zoom
+controls.enableRotate = true; // Enable rotation
+controls.enablePan = true; // Enable panning
+let touchStartX = 0;
+let touchStartY = 0;
 
+renderer.domElement.addEventListener('touchstart', (event) => {
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
+});
+
+renderer.domElement.addEventListener('touchmove', (event) => {
+  const touchEndX = event.touches[0].clientX;
+  const touchEndY = event.touches[0].clientY;
+
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  touchStartX = touchEndX;
+  touchStartY = touchEndY;
+
+  controls.rotateLeft((deltaX / window.innerWidth) * 2 * Math.PI);
+  controls.rotateUp((deltaY / window.innerHeight) * 2 * Math.PI);
+});
 
 // Update the camera position based on the keyboard controls.
 controls.update();
@@ -65,28 +76,26 @@ function addStar() {
   star.position.set(x, y, z);
   scene.add(star);
 }
-// Arra of 250 values and then for each value calls the addStar function
+// Array of 250 values and then for each value calls the addStar function
 Array(250).fill().forEach(addStar);
 
 // changes bg
 const spaceTexture = new THREE.TextureLoader().load('space.png')
 //scene.background = spaceTexture;
-const hdrTexturePath = './assets/Warehouse.hdr';
-const loader2 = new RGBELoader();
-loader2.load(hdrTexturePath, function(texture2){
-  scene.background = texture2;
-})
+// const hdrTexturePath = './assets/Warehouse.hdr';
+// const loader2 = new RGBELoader();
+// loader2.load(hdrTexturePath, function(texture2){
+//   texture2.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.background = texture2;
+// })
 // avatar
 
-//MOOON
-const moonTexture = new THREE.TextureLoader().load('normal.jpg')
-const imageTexture = new THREE.TextureLoader().load('normal.jpg')
-    const moon = new THREE.Mesh(
-    new THREE.SphereGeometry(3, 32, 32),
-    new THREE.MeshStandardMaterial({ map: moonTexture, normalMap: imageTexture })
- );
-moon.userData.objectType = 'moon';
-//scene.add(moon);
+const moonTexture = new THREE.TextureLoader().load('./assets/MetallerDiffuse.png')
+const imageTexture = new THREE.TextureLoader().load('./assets/InkNormal.png')
+const moon = new THREE.Mesh(
+  new THREE.SphereGeometry(3, 32, 32),
+  new THREE.MeshStandardMaterial({ map: moonTexture, normalMap: imageTexture })
+);
 const CV = new THREE.Mesh(
   new THREE.SphereGeometry(3, 32, 32),
   //new THREE.MeshStandardMaterial({ map: moonTexture, normalMap: imageTexture })
@@ -102,21 +111,20 @@ CV.material = material6;
 
 // Optionally, set the side property to DoubleSide if needed
 CV.material.side = THREE.DoubleSide;
+
+moon.userData.objectType = 'moon';
 CV.userData.objectType = 'model4';
 //scene.add(moon);
 scene.add(CV);
-CV.position.set(28, -4, -20);
-CV.scale.set(2.5, 2.5, 2.5);
-
 scene.add(new THREE.AxesHelper(5))
 // Repostionisng moon to further down of z axis as that is the direction of scroll
 moon.position.z = 0;
-moon.position.setX(10);
-moon.position.setY(3);
-
-
-
-
+// moon.position.setX(10);
+// moon.position.setY(3);
+moon.position.set(25, 0, -25);
+moon.scale.set(2, 2, 2);
+CV.position.set(28, -4, -20);
+CV.scale.set(2.5, 2.5, 2.5);
 // scroll Animation
 const loader = new FBXLoader();
 
@@ -138,54 +146,6 @@ scene.add(movieCubeScreen);
 video.play();
 movieCubeScreen.userData.objectType = 'AiStockCounter';
 
-// let video2 = document.getElementById("Kanye");
-// let videoTexture2 = new THREE.VideoTexture(video2);
-// videoTexture2.minFilter = THREE.LinearFilter;
-// videoTexture2.magFilter = THREE.LinearFilter;
-// var movieMaterial2 = new THREE.MeshBasicMaterial({
-//   map:videoTexture2, 
-//   side: THREE.FrontSide,
-//   toneMapped: false,
-// });
-// let movieGeometry2 = new THREE.BoxBufferGeometry(25, 15, 15);
-// //let movieGeometry2 = new THREE.PlaneGeometry(100, 150);
-// let movieCubeScreen2 = new THREE.Mesh(movieGeometry2, movieMaterial2);
-//movieCubeScreen2.position.set(-25, 2, 0);
-//scene.add(movieCubeScreen2);
-//scene.add(movieCubeScreen2.position);
-//video2.play();
-
-// const RobotPath = './assets/MakeRobotAnimationFromHere.glb';
-// const gltfLoader = new GLTFLoader();
-// let mixer2; // Declare a variable to store the animation mixer
-// gltfLoader.load('./assets/MakeRobotAnimationFromHere.glb');
-// gltfLoader.load(RobotPath, function(gltf2) {
-//   const model2 = gltf2.scene;
-//   scene.add(model2);
-  
-//   mixer2 = new THREE.AnimationMixer(model2);
-//   const clips2 = gltf2.animations;
-//   const clip2 = THREE.AnimationClip.findByName(clips2, 'MoveBoxAction');
-//   const action2 = mixer2.clipAction(clip2);
-//   action2.play();
-  
-//   // Iterate over the meshes in the model and apply the texture to each one
-//   model2.traverse((child) => {
-//     if (child instanceof THREE.Mesh) {
-//       const textureLoader = new THREE.TextureLoader();
-//       const texture2 = textureLoader.load('./assets/ParchmentPaperDiffuse.png', function(texture) {
-//         child.material.map = texture; // Assign the texture to the mesh's material
-//         child.material.needsUpdate = true; // Update the material
-//         model2.position.setY(-3.35);
-//         //model2.castShadow = true;
-//       });
-      
-//     }
-//   });
-// }, undefined, function(error) {
-//   console.error(error);
-// });
-
 
 const assetLoader = new GLTFLoader();
 let mixer; // Declare a variable to store the animation mixer
@@ -193,6 +153,9 @@ const TrexIdlePath = './assets/Trexidle.glb';
 assetLoader.load(TrexIdlePath, function(gltf) {
   const model = gltf.scene;
   scene.add(model);
+  model.scale.set(2.5, 2.5, 2.5);
+  model.rotation.y -= 90;
+  
   
   mixer = new THREE.AnimationMixer(model);
   const clips = gltf.animations;
@@ -203,12 +166,19 @@ assetLoader.load(TrexIdlePath, function(gltf) {
   // Iterate over the meshes in the model and apply the texture to each one
   model.traverse((child) => {
     if (child instanceof THREE.Mesh) {
-      const textureLoader = new THREE.TextureLoader();
-      const texture2 = textureLoader.load('./assets/ParchmentPaperDiffuse.png', function(texture) {
-        child.material.map = texture; // Assign the texture to the mesh's material
+      const textureLoader3 = new THREE.TextureLoader();
+      const texture2 = textureLoader3.load('./assets/ParchmentPaperDiffuse.png', function(texture2) {
+        child.material.map = texture2; // Assign the texture to the mesh's material
         child.material.needsUpdate = true; // Update the material
-        model.position.setY(-3.35);
+        model.position.setY(2);
+        model.position.setZ(-25);
+        model.position.setX(-25);
         model.castShadow = true;
+      });
+      const normalMap3 = textureLoader3.load('./assets/InkNormal.png', function(normalMap3) {
+        child.material.normalMap = normalMap3;
+        child.material.normalScale.set(1, 1); // Adjust the scale of the normal map
+        child.material.needsUpdate = true;
       });
       
     }
@@ -216,6 +186,49 @@ assetLoader.load(TrexIdlePath, function(gltf) {
 }, undefined, function(error) {
   console.error(error);
 });
+if (mixer) {
+  mixer.update(clock.getDelta());
+}
+let mixer2;
+const PaperPath = './assets/Paper2AirPlaneFormAnimation2.glb';
+assetLoader.load(PaperPath, function(gltf) {
+  const model2 = gltf.scene; // Use a different variable for the second model
+  scene.add(model2);
+  model2.scale.set(2.5, 2.5, 2.5);
+  mixer2 = new THREE.AnimationMixer(model2);
+  const clips = gltf.animations;
+  const clip = THREE.AnimationClip.findByName(clips, 'PaperPlane');
+  const action = mixer2.clipAction(clip);
+  action.play();
+
+  // Iterate over the meshes in the model and apply the texture to each one
+  model2.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      const textureLoader3 = new THREE.TextureLoader();
+      
+      const texture3 = textureLoader3.load('./assets/ParchmentPaperDiffuse.png', function(texture3) {
+        child.material.map = texture3;
+        child.material.needsUpdate = true;
+        model2.position.setY(20);
+        model2.position.setZ(-25);
+        model2.position.setX(0);
+        //model2.rotation.setZ(90);
+        model2.castShadow = true;
+      });
+      const normalMap3 = textureLoader3.load('./assets/PlaneNormal.png', function(normalMap3) {
+        child.material.normalMap = normalMap3;
+        child.material.normalScale.set(1, 1); // Adjust the scale of the normal map
+        child.material.needsUpdate = true;
+      });
+    }
+    
+  });
+}, undefined, function(error) {
+  console.error(error);
+});
+if (mixer2) {
+  mixer2.update(clock2.getDelta());
+}
 let mixer3;
 const MYCVPath = './assets/MYCV.glb';
 assetLoader.load(MYCVPath, function(gltf) {
@@ -309,8 +322,13 @@ assetLoader.load(MYCVPaperPath, function(gltf) {
 }, undefined, function(error) {
   console.error(error);
 });
+//model4.userData.objectType = 'model4';
+// if (mixer3) {
+//   mixer3.update(clock3.getDelta());
+// }
+
 const floorTexture = new THREE.TextureLoader().load('./assets/MetallerDiffuse.png')
-const normalTexture = new THREE.TextureLoader().load('./assets/MetallerNormal.png')
+const normalTexture = new THREE.TextureLoader().load('./assets/InkNormal.png')
 function createFloor(){
   let pos = { x: 0, y: -8, z: 3};
   let scale = { x: 100, y: 2, z: 100};
@@ -350,14 +368,13 @@ function onDocumentTouchStart(event) {
 
     // Handle object clicks based on their custom properties
     if (intersectedObject.userData.objectType === 'moon') {
-      console.log('Moon was clicked!');
+      console.log('CV was clicked!');
       handleObjectClick(intersectedObject);
+    }else if (intersectedObject.userData.objectType === 'model4') {
+      console.log('CV was clicked!');
+      handleProjectClick(intersectedObject);
     }
-  else if (intersectedObject.userData.objectType === 'model4') {
-    console.log('CV was clicked!');
-    handleProjectClick(intersectedObject);
-  } 
-    else if (intersectedObject.userData.objectType === 'AiStockCounter') {
+     else if (intersectedObject.userData.objectType === 'AiStockCounter') {
       console.log('AiStockCounter was clicked!');
       handleProjectClick(intersectedObject);
     } else {
@@ -381,18 +398,14 @@ function onDocumentClick(event) {
     const intersectedObject = intersects[0].object;
 
     // Check the custom property of the intersected object
-    if (intersectedObject.userData.objectType === 'moon') {
+    if (intersectedObject.userData.objectType === 'moon' ) {
       // Handle the click event for the moon object
       console.log('Moon was clicked!');
       handleObjectClick(intersectedObject);
-    }
-    else if (intersectedObject.userData.objectType === 'model4') {
+    } else if (intersectedObject.userData.objectType === 'model4') {
       // Handle the click event for the model4 object
       console.log('Model4 was clicked!');
       handleObjectClick(intersectedObject);
-    }
-    else {
-      // Handle other objects or cases
     }
     if (intersectedObject.userData.objectType === 'AiStockCounter') {
       // Handle the click event for the moon object
@@ -405,14 +418,16 @@ function onDocumentClick(event) {
 }
 
 function handleObjectClick(object) {
+  var currentURL = window.location.href;
   // Check if the current page is nocv.html
-  if (window.location.href.endsWith('index.html' || 'WebPortfolio/' || 'aistock.html')) {
+  if (currentURL.endsWith('index.html') || currentURL.endsWith('WebPortfolio/') || currentURL.endsWith('aistock.html')) {
     // If on nocv.html, go back to index.html
     window.location.href = 'nocv.html';
   } else {
     // If not on nocv.html, navigate to nocv.html
     window.location.href = 'index.html';
   }
+
 }
 function handleProjectClick(object) {
   if (window.location.href.endsWith('index.html' || 'WebPortfolio/')) {
@@ -446,44 +461,12 @@ let cameraMovementSpeed = 0.1;
 
 // The animate function is called on every animation frame.
 function movecam2() {
-//   // Get the current keyboard state.
+// Get the current keyboard state.
 const keyboardState = window.onkeydown;
-
-
-// Update the camera's position based on the keyboard state.
-// window.addEventListener('keydown', (event) => {
-//   // Check which key was pressed.
-//   switch (event.key) {
-//     case 'w':
-//       // Move the camera forward.
-//       camera.position.z -= 0.0001;
-//       break;
-//     case 'a':
-//       // Move the camera left.
-//       camera.position.x -= 0.0001;
-//       break;
-//     case 's':
-//       // Move the camera backward.
-//       camera.position.z += 0.0001;
-//       break;
-//     case 'd':
-//       // Move the camera right.
-//       camera.position.x += 0.0001;
-//       break;
-//   }
-// });
-// window.addEventListener('keyup', (event) => {
-//   // Clear the camera's movement.
-//   // camera.position.z = 0;
-//   // camera.position.x = 0;
-// });
-//   // Request the next animation frame.
+// Request the next animation frame.
 requestAnimationFrame(movecam2);
 }
 // Animation
-
-// renderer.render( scene, camera );
-// Alternate below
 const clock = new THREE.Clock();
 const clock2 = new THREE.Clock();
 const clock3 = new THREE.Clock();
@@ -491,26 +474,18 @@ const clock4 = new THREE.Clock();
 function animate() {
 
   requestAnimationFrame(animate);
-  // if (videoTexture2) {
-  //   videoTexture2.needsUpdate = true;
-  //   } 
+
   if (videoTexture) {
   videoTexture.needsUpdate = true;
   }
  
-
   if (mixer) {
-    mixer.update(clock.getDelta());
-    //mixer2.update(clock2.getDelta());
-    mixer3.update(clock3.getDelta());
-    mixer4.update(clock4.getDelta() * 0.15);
-    }   
-  torus.rotation.x += 0.01; // rotation along x axis
-  torus.rotation.y += 0.005; // roatation along y axis
-  torus.rotation.z += 0.01; // rotation on z axis
-
+  mixer.update(clock.getDelta());
+  mixer2.update(clock2.getDelta());
+  mixer3.update(clock3.getDelta());
+  mixer4.update(clock4.getDelta() * 0.15);
+  }   
   moon.rotation.x += 0.005;
-  
   controls.update();
 
   renderer.render(scene, camera);
