@@ -5,6 +5,8 @@ import * as THREE from "https://unpkg.com/three@0.127.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "https://unpkg.com/three@0.127.0/examples/jsm/loaders/FBXLoader.js";
 import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/RGBELoader.js';
+import { AmmoPhysics } from "https://unpkg.com/three@0.127.0/examples/jsm/physics/AmmoPhysics.js";
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -80,14 +82,14 @@ function addStar() {
 Array(250).fill().forEach(addStar);
 
 // changes bg
-const spaceTexture = new THREE.TextureLoader().load('Store.png')
-scene.background = spaceTexture;
-// const hdrTexturePath = './assets/Warehouse.hdr';
-// const loader2 = new RGBELoader();
-// loader2.load(hdrTexturePath, function(texture2){
-//   texture2.mapping = THREE.EquirectangularReflectionMapping;
-//   scene.background = texture2;
-// })
+const spaceTexture = new THREE.TextureLoader().load('space.png')
+//scene.background = spaceTexture;
+const hdrTexturePath = './assets/Warehouse.hdr';
+const loader2 = new RGBELoader();
+loader2.load(hdrTexturePath, function(texture2){
+  texture2.mapping = THREE.EquirectangularReflectionMapping;
+  scene.background = texture2;
+})
 // avatar
 
 const moonTexture = new THREE.TextureLoader().load('./assets/MetallerDiffuse.png')
@@ -140,7 +142,7 @@ var movieMaterial = new THREE.MeshBasicMaterial({
 });
 let movieGeometry = new THREE.BoxBufferGeometry(25, 25, 25);
 let movieCubeScreen = new THREE.Mesh(movieGeometry, movieMaterial);
-movieCubeScreen.position.set(0, 2, -150);
+movieCubeScreen.position.set(0, 2, -25);
 scene.add(movieCubeScreen);
 //scene.add(movieCubeScreen.position);
 video.play();
@@ -170,9 +172,9 @@ assetLoader.load(TrexIdlePath, function(gltf) {
       const texture2 = textureLoader3.load('./assets/ParchmentPaperDiffuse.png', function(texture2) {
         child.material.map = texture2; // Assign the texture to the mesh's material
         child.material.needsUpdate = true; // Update the material
-        model.position.setY(4.9);
-        model.position.setZ(175);
-        model.position.setX(50);
+        model.position.setY(2);
+        model.position.setZ(-25);
+        model.position.setX(-25);
         model.castShadow = true;
       });
       const normalMap3 = textureLoader3.load('./assets/InkNormal.png', function(normalMap3) {
@@ -209,7 +211,7 @@ assetLoader.load(PaperPath, function(gltf) {
       const texture3 = textureLoader3.load('./assets/ParchmentPaperDiffuse.png', function(texture3) {
         child.material.map = texture3;
         child.material.needsUpdate = true;
-        model2.position.setY(9.5);
+        model2.position.setY(20);
         model2.position.setZ(-25);
         model2.position.setX(0);
         //model2.rotation.setZ(90);
@@ -230,53 +232,49 @@ if (mixer2) {
   mixer2.update(clock2.getDelta());
 }
 let mixer3;
-const MYCVPath = './assets/tunworker.glb';
+const MYCVPath = './assets/MYCV.glb';
 assetLoader.load(MYCVPath, function(gltf) {
   const model3 = gltf.scene; // Use a different variable for the second model
   scene.add(model3);
   model3.rotation.y -= 90;
   model3.scale.set(2.5, 2.5, 2.5);
-  model3.position.set(0, -8, 3);
   mixer3 = new THREE.AnimationMixer(model3);
   const clips = gltf.animations;
-  clips.forEach((clip10) => {
-    const action10 = mixer3.clipAction(clip10);
-    action10.play();
-  });
-  
+  const clip10 = THREE.AnimationClip.findByName(clips, 'MBoneAction');
+  const action10 = mixer3.clipAction(clip10);
+  action10.play();
+  const clip11 = THREE.AnimationClip.findByName(clips, 'VboneAction');
+  const action11 = mixer3.clipAction(clip11);
+  action11.play();
+  const clip3 = THREE.AnimationClip.findByName(clips, 'CboneAction');
+  const action12 = mixer3.clipAction(clip3);
+  action12.play();
+  const clip4 = THREE.AnimationClip.findByName(clips, 'YboneAction');
+  const action13 = mixer3.clipAction(clip4);
+  action13.play();
 
   // Iterate over the meshes in the model and apply the texture to each one
   model3.traverse((child) => {
     if (child instanceof THREE.Mesh) {
-      if (child.material === null) {
-        const textureLoader3 = new THREE.TextureLoader();
-  
-        // Load and apply the diffuse texture
-        const texture3 = textureLoader3.load('./assets/ParchmentPaperDiffuse.png', function(texture3) {
-          child.material = new THREE.MeshStandardMaterial(); // Create a new material if it's null
-          child.material.map = texture3;
-          child.material.needsUpdate = true;
-  
-          // Set the position of the model
-          model3.position.set(25, 2, -25);
-  
-          // Enable shadow casting
-          model3.castShadow = true;
-        });
-  
-        // Load and apply the normal map
-        const normalMap3 = textureLoader3.load('./assets/PlaneNormal.png', function(normalMap3) {
-          if (!child.material) {
-            child.material = new THREE.MeshStandardMaterial(); // Ensure the material exists
-          }
-          child.material.normalMap = normalMap3;
-          child.material.normalScale.set(1, 1); // Adjust the scale of the normal map
-          child.material.needsUpdate = true;
-        });
-      }
+      const textureLoader3 = new THREE.TextureLoader();
+      
+      const texture3 = textureLoader3.load('./assets/InkDiffuse.png', function(texture3) {
+        child.material.map = texture3;
+        child.material.needsUpdate = true;
+        model3.position.setY(2);
+        model3.position.setZ(-25);
+        model3.position.setX(25);
+        //model2.rotation.setZ(90);
+        model3.castShadow = true;
+      });
+      const normalMap3 = textureLoader3.load('./assets/InkNormal.png', function(normalMap3) {
+        child.material.normalMap = normalMap3;
+        child.material.normalScale.set(1, 1); // Adjust the scale of the normal map
+        child.material.needsUpdate = true;
+      });
     }
+    
   });
-  
 }, undefined, function(error) {
   console.error(error);
 });
